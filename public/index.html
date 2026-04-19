@@ -11,3 +11,105 @@
 --red:#B33A2A;--red-bg:#FDF0EE;--green:#2A6644;--green-bg:#EEF5F0;--orange:#C05A15;--orange-bg:#FDF3EC;
 --r:10px;--r2:16px;--sh:0 1px 4px rgba(28,20,16,.08),0 4px 16px rgba(28,20,16,.06)}
 *{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;font-size:14px}
+header{background:var(--ink);height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:50}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-icon{width:32px;height:32px;background:var(--gold);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px}
+.brand-name{font-family:'Playfair Display',serif;color:var(--paper);font-size:16px}
+.brand-tag{font-size:9px;color:var(--gold2);letter-spacing:2px;text-transform:uppercase}
+.sheets-link{font-size:11px;color:var(--gold2);text-decoration:none;border:1px solid rgba(200,153,42,.3);padding:4px 10px;border-radius:6px}
+.sheets-link:hover{background:rgba(200,153,42,.15)}
+main{max-width:1100px;margin:0 auto;padding:24px 20px}
+nav{display:flex;gap:3px;margin-bottom:20px;flex-wrap:wrap}
+.nb{padding:7px 16px;border-radius:var(--r);border:none;background:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:var(--ink2)}
+.nb:hover{background:var(--paper2)}
+.nb.on{background:var(--ink);color:var(--gold2)}
+.pane{display:none}.pane.on{display:block}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px}
+.sc{background:var(--snow);border-radius:var(--r);padding:14px 16px;box-shadow:var(--sh);border-top:3px solid var(--paper2)}
+.sc.ok{border-top-color:var(--green)}.sc.warn{border-top-color:var(--orange)}.sc.err{border-top-color:var(--red)}.sc.gold{border-top-color:var(--gold)}
+.sc-l{font-size:10px;color:var(--ink3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}
+.sc-v{font-size:26px;font-weight:500;font-family:'DM Mono',monospace}
+.card{background:var(--snow);border-radius:var(--r2);box-shadow:var(--sh);overflow:hidden}
+.card-head{padding:14px 20px;border-bottom:1px solid var(--paper2);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.card-head h3{font-family:'Playfair Display',serif;font-size:17px}
+.card-body{padding:20px}
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead th{font-size:10px;font-weight:600;color:var(--ink3);padding:6px 10px;border-bottom:1px solid var(--paper2);text-align:left;text-transform:uppercase;letter-spacing:.5px;background:var(--paper)}
+td{padding:9px 10px;border-bottom:1px solid var(--paper2);vertical-align:middle}
+tr:last-child td{border:none}
+tr:hover td{background:var(--paper)}
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.3px}
+.bok{background:var(--green-bg);color:var(--green)}
+.blow{background:var(--orange-bg);color:var(--orange)}
+.bout{background:var(--red-bg);color:var(--red)}
+.bgr{background:var(--paper2);color:var(--ink2)}
+.btn{padding:7px 16px;border-radius:var(--r);border:1.5px solid var(--paper2);background:var(--snow);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:var(--ink);transition:.15s;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{border-color:var(--gold);background:var(--gold3)}
+.btn.pri{background:var(--ink);color:var(--gold2);border-color:transparent}
+.btn.pri:hover{background:var(--ink2)}
+.btn.suc{background:var(--green-bg);color:var(--green);border-color:var(--green)}
+.btn.dan{background:var(--red-bg);color:var(--red);border-color:var(--red)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.fg{margin-bottom:12px}
+.fg label{display:block;font-size:11px;font-weight:600;color:var(--ink2);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}
+.fg input,.fg select,.fg textarea{width:100%;border:1.5px solid var(--paper2);border-radius:var(--r);padding:9px 12px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink);background:var(--snow);outline:none}
+.fg input:focus,.fg select:focus{border-color:var(--gold)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.drop-zone{border:2px dashed var(--paper2);border-radius:var(--r2);padding:36px 24px;text-align:center;cursor:pointer;transition:.2s;background:var(--paper)}
+.drop-zone:hover,.drop-zone.over{border-color:var(--gold);background:var(--gold3)}
+.rb{border:1px solid var(--paper2);border-radius:var(--r2);margin-bottom:14px;overflow:hidden}
+.rh{padding:12px 16px;background:var(--paper);border-bottom:1px solid var(--paper2);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.rh-title{font-weight:600;font-size:13px}
+.rh-meta{font-size:11px;color:var(--ink3)}
+.ri{display:grid;grid-template-columns:minmax(0,2.5fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) 30px;gap:6px;padding:8px 14px;border-bottom:1px solid var(--paper2);align-items:center}
+.ri:last-child{border:none}
+.ri input{padding:5px 8px;font-size:12px;border:1.5px solid var(--paper2);border-radius:7px;font-family:'DM Sans',sans-serif}
+.ri input:focus{border-color:var(--gold);outline:none}
+.rf{padding:10px 14px;background:var(--paper);display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.al{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:var(--r);border:1px solid var(--paper2);margin-bottom:8px}
+.al.cr{border-color:var(--red);background:var(--red-bg)}
+.al.wn{border-color:var(--orange);background:var(--orange-bg)}
+.info{padding:10px 14px;border-radius:var(--r);background:#EEF3F8;color:#1A5080;font-size:13px;margin-bottom:12px}
+.suc-box{padding:10px 14px;border-radius:var(--r);background:var(--green-bg);color:var(--green);font-size:13px;margin-bottom:12px}
+.err-box{padding:10px 14px;border-radius:var(--r);background:var(--red-bg);color:var(--red);font-size:13px;margin-bottom:12px}
+.tp{display:flex;gap:6px;margin-bottom:12px}
+.tp-b{flex:1;padding:9px;border-radius:var(--r);border:1.5px solid var(--paper2);background:var(--snow);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;text-align:center;transition:.15s}
+.tp-b:hover{border-color:var(--gold)}
+.tp-b.on{border-color:var(--gold);background:var(--gold3);color:var(--ink)}
+.mv{display:flex;align-items:center;gap:12px;padding:10px 14px;border:1px solid var(--paper2);border-radius:var(--r);margin-bottom:7px;background:var(--snow)}
+.mv-ico{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.sl{font-size:11px;color:var(--ink3);font-style:italic}
+.empty{text-align:center;padding:40px;color:var(--ink3)}
+.sec{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+.sec h3{font-family:'Playfair Display',serif;font-size:18px}
+.stock-info{font-size:12px;color:var(--ink3);padding:6px 10px;background:var(--paper2);border-radius:7px;margin-bottom:10px}
+.stock-ok{color:var(--green);font-weight:600}
+.stock-low{color:var(--orange);font-weight:600}
+.stock-out{color:var(--red);font-weight:600}
+.ri-header{display:grid;grid-template-columns:minmax(0,2.5fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) 30px;gap:6px;padding:6px 14px;font-size:10px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.5px;background:var(--paper2)}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <div class="brand-icon">🏔️</div>
+    <div>
+      <div class="brand-name">Chalet Suizo</div>
+      <div class="brand-tag">Gestión de Inventario</div>
+    </div>
+  </div>
+  <a class="sheets-link" href="https://docs.google.com/spreadsheets/d/1ibIG7iaATpRP3CodLlLYzzCYk4c7WRQr/edit" target="_blank">Abrir Google Sheets ↗</a>
+</header>
+
+<main>
+  <nav>
+    <button class="nb on" onclick="show('inv',this)">📦 Inventario</button>
+    <button class="nb" onclick="show('ent',this)">📥 Entradas <span id="pb" style="display:none;background:#B33A2A;color:#fff;border-radius:10px;font-size:10px;padding:1px 6px;margin-left:3px"></span></button>
+    <button class="nb" onclick="show('sal',this)">📤 Salidas</button>
+    <button class="nb" onclick="show('mov',this)">🔄 Movimientos</button>
+  </nav>mentById('s-dt').value=now();
+</script>
+</body>
+</html>
