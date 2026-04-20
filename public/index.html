@@ -6,10 +6,7 @@
 <title>Inventario · Chalet Suizo</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
 <style>
-:root{--ink:#1C1410;--ink2:#5C4033;--ink3:#9C7E6E;--paper:#FAF6EF;--paper2:#F0EAE0;--snow:#FFFDF8;
---gold:#C8992A;--gold2:#E8C870;--gold3:#F5E4B0;
---red:#B33A2A;--red-bg:#FDF0EE;--green:#2A6644;--green-bg:#EEF5F0;--orange:#C05A15;--orange-bg:#FDF3EC;
---r:10px;--r2:16px;--sh:0 1px 4px rgba(28,20,16,.08),0 4px 16px rgba(28,20,16,.06)}
+:root{--ink:#1C1410;--ink2:#5C4033;--ink3:#9C7E6E;--paper:#FAF6EF;--paper2:#F0EAE0;--snow:#FFFDF8;--gold:#C8992A;--gold2:#E8C870;--gold3:#F5E4B0;--red:#B33A2A;--red-bg:#FDF0EE;--green:#2A6644;--green-bg:#EEF5F0;--orange:#C05A15;--orange-bg:#FDF3EC;--r:10px;--r2:16px;--sh:0 1px 4px rgba(28,20,16,.08),0 4px 16px rgba(28,20,16,.06)}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;font-size:14px}
 header{background:var(--ink);height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:50}
@@ -56,7 +53,6 @@ tr:hover td{background:var(--paper)}
 .fg input,.fg select,.fg textarea{width:100%;border:1.5px solid var(--paper2);border-radius:var(--r);padding:9px 12px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink);background:var(--snow);outline:none}
 .fg input:focus,.fg select:focus{border-color:var(--gold)}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
 .drop-zone{border:2px dashed var(--paper2);border-radius:var(--r2);padding:36px 24px;text-align:center;cursor:pointer;transition:.2s;background:var(--paper)}
 .drop-zone:hover,.drop-zone.over{border-color:var(--gold);background:var(--gold3)}
 .rb{border:1px solid var(--paper2);border-radius:var(--r2);margin-bottom:14px;overflow:hidden}
@@ -94,7 +90,7 @@ tr:hover td{background:var(--paper)}
 <body>
 <header>
   <div class="brand">
-    <div class="brand-icon">🏔️</div>
+    <div class="brand-icon">🍴</div>
     <div>
       <div class="brand-name">Chalet Suizo</div>
       <div class="brand-tag">Gestión de Inventario</div>
@@ -108,8 +104,373 @@ tr:hover td{background:var(--paper)}
     <button class="nb on" onclick="show('inv',this)">📦 Inventario</button>
     <button class="nb" onclick="show('ent',this)">📥 Entradas <span id="pb" style="display:none;background:#B33A2A;color:#fff;border-radius:10px;font-size:10px;padding:1px 6px;margin-left:3px"></span></button>
     <button class="nb" onclick="show('sal',this)">📤 Salidas</button>
-    <button class="nb" onclick="show('mov',this)">🔄 Movimientos</button>
-  </nav>mentById('s-dt').value=now();
+    <button class="nb" onclick="show('mov',this)">📔 Movimientos</button>
+  </nav>
+
+  <div id="pane-inv" class="pane on">
+    <div class="stats" id="stats"></div>
+    <div id="alerts"></div>
+    <div class="card">
+      <div class="card-head">
+        <h3>Productos en inventario</h3>
+        <div style="display:flex;gap:7px;flex-wrap:wrap">
+          <input id="srch" placeholder="🔍 Buscar..." style="width:180px;border:1.5px solid var(--paper2);border-radius:var(--r);padding:7px 12px;font-size:13px;font-family:'DM Sans',sans-serif;background:var(--snow)" oninput="rInv()">
+          <select id="fcat" onchange="rInv()" style="border:1.5px solid var(--paper2);border-radius:var(--r);padding:7px 10px;font-size:13px;font-family:'DM Sans',sans-serif;background:var(--snow)"><option value="">Todas las categorías</option></select>
+          <button class="btn" onclick="syncInventario()">⇻ Sincronizar</button>
+        </div>
+      </div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr><th>Producto</th><th>Categoría</th><th>Stock</th><th>Mínimo</th><th>Unidad</th><th>Proveedor</th><th>Estado</th></tr></thead>
+          <tbody id="inv-b"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="pane-ent" class="pane">
+    <div class="sec">
+      <h3>Entradas desde facturas / albaranes PDF</h3>
+      <div style="display:flex;gap:7px">
+        <button class="btn pri" onclick="document.getElementById('fi').click()">📄 Seleccionar PDFs</button>
+        <input type="file" id="fi" accept=".pdf" multiple style="display:none" onchange="handlePDFs(this.files)">
+      </div>
+    </div>
+    <div id="rev-area"></div>
+    <div id="dzw">
+      <div class="drop-zone" id="dz" onclick="document.getElementById('fi').click()">
+        <div style="font-size:36px;margin-bottom:12px">📃</div>
+        <div style="font-size:16px;font-weight:600;margin-bottom:6px">Arrastra facturas o albaranes aquí</div>
+        <div style="color:var(--ink3);font-size:13px;margin-bottom:6px">PDF – múltiples archivos a la vez</div>
+        <div style="color:var(--green);font-size:12px;margin-bottom:16px">✓ Al confirmar se escriben automáticamente en Google Sheets</div>
+        <button class="btn" onclick="event.stopPropagation();document.getElementById('fi').click()">Seleccionar archivos</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="pane-sal" class="pane">
+    <div class="sec"><h3>Registrar salida</h3></div>
+    <div style="max-width:500px">
+      <div class="fg"><label>Tipo de salida</label>
+        <div class="tp">
+          <button class="tp-b on" onclick="sTipo(this,'consumo')">🍽 Consumo</button>
+          <button class="tp-b" onclick="sTipo(this,'merma')">🗑 Merma</button>
+          <button class="tp-b" onclick="sTipo(this,'desecho')">🗑 Desecho</button>
+        </div>
+        <input type="hidden" id="s-tp" value="consumo">
+      </div>
+      <div class="fg"><label>Producto <span id="prod-n" style="color:var(--ink3);font-weight:400;text-transform:none"></span></label>
+        <select id="s-pr" onchange="selProd()" style="border:1.5px solid var(--paper2);border-radius:var(--r);padding:9px 12px;font-size:13px;font-family:'DM Sans',sans-serif;background:var(--snow);width:100%">
+          <option value="">– Cargando desde Sheets… –</option>
+        </select>
+      </div>
+      <div id="stock-info" class="stock-info" style="display:none"></div>
+      <div class="g2">
+        <div class="fg"><label>Cantidad</label><input type="number" id="s-qt" value="1" min="0.01" step="0.1"></div>
+        <div class="fg"><label>Unidad</label><input id="s-un" readonly style="background:var(--paper2)"></div>
+      </div>
+      <div class="fg"><label>Fecha</label><input type="datetime-local" id="s-dt"></div>
+      <div class="fg"><label>Nota (opcional)</label><input id="s-nt" placeholder="ej. servicio de cena, deterioro..."></div>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:4px">
+        <button class="btn pri" onclick="saveSal()" id="sal-btn">Registrar → Sheets</button>
+        <span id="sl-log" class="sl"></span>
+      </div>
+    </div>
+  </div>
+
+  <div id="pane-mov" class="pane">
+    <div class="sec">
+      <h3>Historial de movimientos</h3>
+      <div style="display:flex;gap:7px">
+        <select id="f-mt" onchange="rMov()" style="border:1.5px solid var(--paper2);border-radius:var(--r);padding:7px 10px;font-size:13px;font-family:'DM Sans',sans-serif;background:var(--snow)">
+          <option value="">Todos</option><option value="entrada">Entradas</option><option value="salida">Salidas</option>
+        </select>
+      </div>
+    </div>
+    <div id="mov-l"></div>
+  </div>
+</main>
+
+<script>
+let productos = [];
+let movimientos = [];
+
+function now(){const n=new Date();n.setMinutes(n.getMinutes()-n.getTimezoneOffset());return n.toISOString().slice(0,16);}
+function fd(d){return new Date(d).toLocaleString('es-ES',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'});}
+function st(p){return p.stock===0?'out':p.stock<=p.min?'low':'ok';}
+function cats(){return[...new Set(productos.map(p=>p.cat||'Sin categoría'))].sort();}
+
+function show(name,btn){
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('pane-'+name).classList.add('on');
+  if(name==='inv')rInv();
+  if(name==='sal'){loadProductos();document.getElementById('s-dt').value=now();}
+  if(name==='mov')rMov();
+}
+
+async function loadProductos(){
+  try{
+    const r=await fetch('/api/productos');
+    const d=await r.json();
+    if(d.ok){
+      productos=d.productos;
+      populateSalSelect();
+      rStats();rAlerts();rInv();
+    }
+  }catch(e){console.error('Error cargando productos:',e);}
+}
+
+function rStats(){
+  const t=productos.length,
+    out=productos.filter(p=>st(p)==='out').length,
+    low=productos.filter(p=>st(p)==='low').length,
+    ok=productos.filter(p=>st(p)==='ok').length;
+  document.getElementById('stats').innerHTML=`
+    <div class="sc gold"><div class="sc-l">Total productos</div><div class="sc-v">${t}</div></div>
+    <div class="sc ok"><div class="sc-l">Stock OK</div><div class="sc-v">${ok}</div></div>
+    <div class="sc warn"><div class="sc-l">Stock bajo</div><div class="sc-v">${low}</div></div>
+    <div class="sc err"><div class="sc-l">Sin stock</div><div class="sc-v">${out}</div></div>`;
+}
+
+function rAlerts(){
+  const u=productos.filter(p=>st(p)!=='ok');
+  document.getElementById('alerts').innerHTML=u.length?u.map(p=>`
+    <div class="al ${p.stock===0?'cr':'wn'}">
+      <span style="font-size:18px">${p.stock===0?'🚨':'⚠️'}</span>
+      <div style="flex:1"><b>${p.nombre}</b> – ${p.stock===0?'sin stock':`${p.stock} ${p.unit} (mínimo: ${p.min})`}</div>
+    </div>`).join(''):'';
+}
+
+function rInv(){
+  const q=document.getElementById('srch').value.toLowerCase();
+  const fc=document.getElementById('fcat');const cv=fc.value;
+  fc.innerHTML='<option value="">Todas las categorías</option>'+cats().map(c=>`<option ${c===cv?'selected':''}>${c}</option>`).join('');
+  const list=productos.filter(p=>(!q||p.nombre.toLowerCase().includes(q))&&(!cv||(p.cat||'Sin categoría')===cv));
+  const sb=p=>{const s=st(p);return s==='ok'?'<span class="badge bok">OK</span>':s==='low'?'<span class="badge blow">Bajo</span>':'<span class="badge bout">Sin stock</span>';};
+  const b=document.getElementById('inv-b');
+  if(!list.length){b.innerHTML='<tr><td colspan="7"><div class="empty">Sin resultados</div></td></tr>';return;}
+  b.innerHTML=list.map(p=>`<tr>
+    <td><b>${p.nombre}</b></td>
+    <td><span class="badge bgr">${p.cat||'Sin categoría'}</span></td>
+    <td style="font-family:'DM Mono',monospace">${p.stock}</td>
+    <td style="color:var(--ink3)">${p.min}</td>
+    <td style="color:var(--ink3)">${p.unit}</td>
+    <td style="color:var(--ink3);font-size:12px">${p.supplier||'–'}</td>
+    <td>${sb(p)}</td>
+  </tr>`).join('');
+}
+
+async function syncInventario(){
+  const btn=event.target;btn.textContent='⇻ Sincronizando…';btn.disabled=true;
+  await loadProductos();
+  btn.textContent='⇻ Sincronizar';btn.disabled=false;
+}
+
+let pending=[];
+
+async function handlePDFs(files){
+  if(!files.length)return;
+  document.getElementById('dzw').style.display='none';
+  pending=[];
+  const arr=Array.from(files);
+  document.getElementById('rev-area').innerHTML=`<div class="info">⏳ Procesando ${arr.length} archivo(s) con IA…</div>`;
+  let done=0;
+  for(const f of arr){
+    const fd2=new FormData();
+    fd2.append('pdf',f);
+    try{
+      const r=await fetch('/api/upload',{method:'POST',body:fd2});
+      const d=await r.json();
+      if(d.ok){pending.push({filename:f.name,...d.data});}
+      else{pending.push({filename:f.name,proveedor:'',fecha:'',numero_doc:'',items:[],_err:d.error});}
+    }catch(e){
+      pending.push({filename:f.name,proveedor:'',fecha:'',numero_doc:'',items:[],_err:e.message});
+    }
+    done++;
+    document.getElementById('rev-area').innerHTML=`<div class="info">⏳ Procesados ${done}/${arr.length} archivos…</div>`;
+  }
+  rReview();
+}
+
+function rReview(){
+  updBadge();
+  const area=document.getElementById('rev-area');
+  if(!pending.length){
+    area.innerHTML='<div class="suc-box">✅ Todos los documentos confirmados y registrados en Google Sheets.</div>';
+    document.getElementById('dzw').style.display='block';
+    loadProductos();
+    return;
+  }
+  area.innerHTML=pending.map((ext,ei)=>`
+    <div class="rb">
+      <div class="rh">
+        <div>
+          <div class="rh-title">📄 ${ext.filename}</div>
+          <div class="rh-meta">${ext.proveedor||'Proveedor no detectado'} ${ext.fecha?'· '+ext.fecha:''} ${ext.numero_doc?'· Nº '+ext.numero_doc:''}</div>
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <input value="${ext.proveedor||''}" id="pv-${ei}" placeholder="Proveedor" style="border:1.5px solid var(--paper2);border-radius:7px;padding:5px 9px;font-size:12px;font-family:'DM Sans',sans-serif;width:160px">
+          <input type="date" value="${ext.fecha||''}" id="fh-${ei}" style="border:1.5px solid var(--paper2);border-radius:7px;padding:5px 9px;font-size:12px;font-family:'DM Sans',sans-serif;width:135px">
+        </div>
+      </div>
+      ${ext._err?`<div class="err-box">⚠ Error: ${ext._err}<br><small>Añade líneas manualmente o descarta.</small></div>`:''}
+      <div class="ri-header"><span>Producto</span><span>Cantidad</span><span>Unidad</span><span>Precio € / ud</span><span></span></div>
+      ${ext.items.map((it,ii)=>`
+        <div class="ri">
+          <input value="${it.nombre}" id="rn-${ei}-${ii}" placeholder="Nombre producto">
+          <input type="number" value="${it.cantidad}" id="rq-${ei}-${ii}" min="0" step="0.01">
+          <input value="${it.unidad}" id="ru-${ei}-${ii}" placeholder="kg, L…">
+          <input type="number" value="${it.precio_unitario||0}" id="rp-${ei}-${ii}" min="0" step="0.01">
+          <button onclick="rmIt(${ei},${ii})" style="border:none;background:var(--red-bg);color:var(--red);border-radius:6px;cursor:pointer;font-size:13px;padding:4px 7px">✕</button>
+        </div>`).join('')}
+      <div class="rf">
+        <button class="btn" style="font-size:12px" onclick="addIt(${ei})">+ Añadir línea</button>
+        <div style="display:flex;gap:7px;align-items:center">
+          <span id="sl-${ei}" class="sl"></span>
+          <button class="btn dan" style="font-size:12px" onclick="disc(${ei})">Descartar</button>
+          <button class="btn suc" style="font-size:12px" id="cb-${ei}" onclick="confExt(${ei})">✅ Confirmar → Sheets</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function addIt(ei){pending[ei].items.push({nombre:'',cantidad:1,unidad:'kg',precio_unitario:0});rReview();}
+function rmIt(ei,ii){pending[ei].items.splice(ii,1);rReview();}
+function disc(ei){pending.splice(ei,1);rReview();}
+
+async function confExt(ei){
+  const ext=pending[ei];
+  const prov=document.getElementById(`pv-${ei}`).value.trim();
+  const fecha=document.getElementById(`fh-${ei}`).value||new Date().toISOString().slice(0,10);
+  const logEl=document.getElementById(`sl-${ei}`);
+  const btn=document.getElementById(`cb-${ei}`);
+  const items=ext.items.map((it,ii)=>({
+    nombre:document.getElementById(`rn-${ei}-${ii}`)?.value.trim()||'',
+    cantidad:parseFloat(document.getElementById(`rq-${ei}-${ii}`)?.value)||0,
+    unidad:document.getElementById(`ru-${ei}-${ii}`)?.value.trim()||'',
+    precio_unitario:parseFloat(document.getElementById(`rp-${ei}-${ii}`)?.value)||0,
+  })).filter(it=>it.nombre&&it.cantidad>0);
+  if(!items.length){alert('No hay líneas válidas.');return;}
+  btn.disabled=true;btn.textContent='Enviando…';
+  logEl.textContent='Escribiendo en Google Sheets…';
+  try{
+    const r=await fetch('/api/confirmar',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({items,proveedor:prov,fecha,numero_doc:ext.numero_doc||''})
+    });
+    const d=await r.json();
+    if(d.ok){
+      logEl.textContent='✓ '+d.message;
+      movimientos.unshift({type:'entrada',productos:items.map(i=>i.nombre),fecha,proveedor:prov,source:'PDF'});
+      pending.splice(ei,1);updBadge();rReview();
+    } else {
+      logEl.textContent='⚠ Error: '+d.error;
+      btn.disabled=false;btn.textContent='✅ Confirmar → Sheets';
+    }
+  }catch(e){
+    logEl.textContent='⚠ Error de conexión';
+    btn.disabled=false;btn.textContent='✅ Confirmar → Sheets';
+  }
+}
+
+function updBadge(){
+  const n=pending.length;
+  const b=document.getElementById('pb');
+  b.style.display=n?'inline':'none';b.textContent=n;
+}
+
+const dz=document.getElementById('dz');
+dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('over')});
+dz.addEventListener('dragleave',()=>dz.classList.remove('over'));
+dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('over');handlePDFs(e.dataTransfer.files)});
+
+function populateSalSelect(){
+  const sel=document.getElementById('s-pr');
+  const n=document.getElementById('prod-n');
+  if(n)n.textContent=`(${productos.length} productos)`;
+  sel.innerHTML='<option value="">– Seleccionar producto –</option>'+
+    productos.map((p,i)=>{
+      const s=p.stock===0?'🚨':p.stock<=p.min?'⚠️':'✅';
+      return`<option value="${i}">${s} ${p.nombre} – ${p.stock} ${p.unit}</option>`;
+    }).join('');
+}
+
+function selProd(){
+  const idx=parseInt(document.getElementById('s-pr').value);
+  const info=document.getElementById('stock-info');
+  if(isNaN(idx)){info.style.display='none';document.getElementById('s-un').value='';return;}
+  const p=productos[idx];
+  document.getElementById('s-un').value=p.unit||'';
+  const cls=p.stock===0?'stock-out':p.stock<=p.min?'stock-low':'stock-ok';
+  info.innerHTML=`Stock disponible: <span class="${cls}">${p.stock} ${p.unit}</span>${p.min?' · Mínimo configurado: '+p.min+' '+p.unit:''}`;
+  info.style.display='block';
+}
+
+function sTipo(btn,val){
+  document.querySelectorAll('.tp-b').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');document.getElementById('s-tp').value=val;
+}
+
+async function saveSal(){
+  const idx=parseInt(document.getElementById('s-pr').value);
+  const qty=parseFloat(document.getElementById('s-qt').value)||0;
+  const tipo=document.getElementById('s-tp').value;
+  const nota=document.getElementById('s-nt').value.trim();
+  const fecha=document.getElementById('s-dt').value.slice(0,10);
+  const logEl=document.getElementById('sl-log');
+  const btn=document.getElementById('sal-btn');
+  if(isNaN(idx)||idx<0){alert('Selecciona un producto.');return;}
+  if(qty<=0){alert('Cantidad inválida.');return;}
+  const p=productos[idx];
+  if(p.stock<qty){alert(`Stock insuficiente. Solo hay ${p.stock} ${p.unit} de ${p.nombre}.`);return;}
+  btn.disabled=true;logEl.textContent='Enviando…';
+  try{
+    const r=await fetch('/api/salida',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({nombre:p.nombre,tipo,cantidad:qty,unidad:p.unit,fecha,nota})
+    });
+    const d=await r.json();
+    if(d.ok){
+      logEl.textContent='✓ Registrado en Google Sheets';
+      p.stock=parseFloat((p.stock-qty).toFixed(3));
+      populateSalSelect();rStats();rAlerts();
+      document.getElementById('s-pr').value='';
+      document.getElementById('s-qt').value=1;
+      document.getElementById('s-nt').value='';
+      document.getElementById('s-un').value='';
+      document.getElementById('stock-info').style.display='none';
+      movimientos.unshift({type:'salida',nombre:p.nombre,tipo,cantidad:qty,unidad:p.unit,fecha});
+      setTimeout(()=>logEl.textContent='',3000);
+    } else {
+      logEl.textContent='⚠ Error: '+d.error;
+    }
+  }catch(e){logEl.textContent='⚠ Error de conexión';}
+  btn.disabled=false;
+}
+
+function rMov(){
+  const ty=document.getElementById('f-mt').value;
+  let list=movimientos.filter(m=>!ty||m.type===ty);
+  const el=document.getElementById('mov-l');
+  if(!list.length){el.innerHTML='<div class="empty">No hay movimientos en esta sesión</div>';return;}
+  el.innerHTML=list.map(m=>{
+    const qc=m.type==='entrada'?'var(--green-bg)':'var(--red-bg)';
+    const ic=m.type==='entrada'?'📥':'📤';
+    return`<div class="mv">
+      <div class="mv-ico" style="background:${qc}">${ic}</div>
+      <div style="flex:1">
+        <div style="font-weight:600">${m.type==='entrada'?(m.proveedor||'Entrada'):(m.nombre||'Salida')}</div>
+        <div style="font-size:11px;color:var(--ink3)">${m.type==='entrada'?m.productos?.join(', '):`${m.tipo} · ${m.cantidad} ${m.unidad}`} · ${m.fecha}</div>
+      </div>
+      <span class="badge" style="background:${qc};color:${m.type==='entrada'?'var(--green)':'var(--red)'}">${m.type==='entrada'?'PDF':'Manual'}</span>
+    </div>`;
+  }).join('');
+}
+
+loadProductos();
+document.getElementById('s-dt').value=now();
 </script>
 </body>
 </html>
