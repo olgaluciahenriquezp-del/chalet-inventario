@@ -5,6 +5,15 @@ const fetch = require('node-fetch');
 const app = express();
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 20 * 1024 * 1024 } });
 
+// CORS - allow all origins
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+  if (req.method === 'OPTIONS') return res.sendStatus(200);
+  next();
+});
+
 app.use(express.json());
 app.use(express.static('public'));
 
@@ -40,8 +49,8 @@ Si no encuentras un campo usa cadena vacia o 0.`,
     })
   });
   const data = await resp.json();
-  if (data.error) throw new Error(`Claude API: ${data.error.message}`);
-  const raw = data.content?.filter(b => b.type === 'text').map(b => b.text).join('') || '';
+  if (data.error) throw new Error('Claude API: ' + data.error.message);
+  const raw = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
   const match = raw.match(/\{[\s\S]*\}/);
   if (!match) throw new Error('No se encontro JSON en la respuesta');
   const parsed = JSON.parse(match[0]);
@@ -76,7 +85,7 @@ app.post('/api/confirmar', async (req, res) => {
     const { items, proveedor, fecha, numero_doc } = req.body;
     if (!items || !items.length) return res.status(400).json({ error: 'Sin items' });
     const result = await callAppsScript({ type: 'entrada', items, proveedor, fecha, numero_doc });
-    res.json({ ok: true, message: `${items.length} producto(s) registrados en Google Sheets`, result });
+    res.json({ ok: true, message: items.length + ' producto(s) registrados en Google Sheets', result });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -107,4 +116,4 @@ app.get('/api/health', (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Servidor en puerto ${PORT}`));
+app.listen(PORT, () => console.log('Servidor en puerto ' + PORT));
